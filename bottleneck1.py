@@ -121,11 +121,11 @@ graph = tf.Graph() # no necessiry
 with graph.as_default():
 
 	# 1. Construct a graph representing the model.
-	height, width =  540, 540
+	height, width =  299, 299
 	x = tf.placeholder(tf.float32, [None, height, width]) # Placeholder for input.
 	y = tf.placeholder(tf.float32, [None])   # Placeholder for labels.
 	
-	resized_input_tensor = tf.reshape(x, [-1,540,540,1]) #[batch_size, height, width, 3].
+	resized_input_tensor = tf.reshape(x, [-1, height, width, 3]) #[batch_size, height, width, 3].
 
 	#resized_input_tensor = tf.placeholder(tf.float32, [None, height, width, 3])
 	#hub.load_module_spec(FLAGS.tfhub_module)
@@ -140,7 +140,7 @@ with graph.as_default():
 	bottleneck_tensor_size = 2048
 	bottleneck_input = tf.placeholder_with_default(  # A placeholder op that passes through input when its output is not fed.
 		bottleneck_tensor,
-		shape=[BATCH_SIZE, bottleneck_tensor_size],
+		shape=[None, bottleneck_tensor_size],
 		name='BottleneckInputPlaceholder')
 
 	num_neurons_1 = 1024
