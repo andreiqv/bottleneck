@@ -31,8 +31,10 @@ import _pickle as pickle
 import gzip
 import tensorflow_hub as hub
 
+from rotate_images import *
+
 BATCH_SIZE = 5
-NUM_ITERS = 50000
+NUM_ITERS = 500000
 
 data_file = "dump.gz"
 f = gzip.open(data_file, 'rb')
