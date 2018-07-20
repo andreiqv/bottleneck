@@ -32,7 +32,7 @@ import gzip
 import tensorflow_hub as hub
 
 BATCH_SIZE = 5
-NUM_ITERS = 50000
+NUM_ITERS = 5000
 
 data_file = "dump.gz"
 f = gzip.open(data_file, 'rb')
@@ -143,20 +143,19 @@ with graph.as_default():
 		shape=[None, bottleneck_tensor_size],
 		name='BottleneckInputPlaceholder')
 
-	#num_neurons_1 = 2048
-	#initial_value = tf.truncated_normal([bottleneck_tensor_size, num_neurons_1], stddev=0.001)
-	#layer_weights = tf.Variable(initial_value, name='f1')
+	num_neurons_1 = 2048
+	initial_value = tf.truncated_normal([bottleneck_tensor_size, num_neurons_1], stddev=0.001)
+	layer_weights = tf.Variable(initial_value, name='f1')
 	#variable_summaries(layer_weights)
-	#layer_biases = tf.Variable(tf.zeros([num_neurons_1]), name='b1')
+	layer_biases = tf.Variable(tf.zeros([num_neurons_1]), name='b1')
 	#variable_summaries(layer_biases)
 	
-	#f1 = tf.matmul(bottleneck_input, layer_weights) + layer_biases
+	f1 = tf.matmul(bottleneck_input, layer_weights) + layer_biases
 	#tf.summary.histogram('pre_activations', logits)	
 	#final_tensor = tf.nn.softmax(logits, name=final_tensor_name)
 
-	#drop1 = tf.layers.dropout(inputs=f1, rate=0.4)	
-	
-	f2 = fullyConnectedLayer(bottleneck_input, input_size=2048, num_neurons=1, 
+	drop1 = tf.layers.dropout(inputs=f1, rate=0.4)	
+	f2 = fullyConnectedLayer(drop1, input_size=2048, num_neurons=1, 
 		func=None, name='F2')
 
 	output = f2
