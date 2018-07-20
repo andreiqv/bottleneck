@@ -31,9 +31,6 @@ import _pickle as pickle
 import gzip
 import tensorflow_hub as hub
 
-from rotate_images import *
-
-
 BATCH_SIZE = 5
 NUM_ITERS = 5000
 
@@ -150,7 +147,7 @@ with graph.as_default():
 	initial_value = tf.truncated_normal([bottleneck_tensor_size, num_neurons_1], stddev=0.001)
 	layer_weights = tf.Variable(initial_value, name='f1')
 	#variable_summaries(layer_weights)
-	layer_biases = tf.Variable(tf.zeros([class_count]), name='b1')
+	layer_biases = tf.Variable(tf.zeros([num_neurons_1]), name='b1')
 	#variable_summaries(layer_biases)
 	
 	f1 = tf.matmul(bottleneck_input, layer_weights) + layer_biases
