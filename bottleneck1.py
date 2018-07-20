@@ -138,36 +138,30 @@ with graph.as_default():
 	module = hub.Module("https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1")
 	height, width = hub.get_expected_image_size(module)
 	
-	image_feature_vector = module(resized_input_tensor)  # Features with shape [batch_size, num_features]
+	bottleneck_tensor = module(resized_input_tensor)  # Features with shape [batch_size, num_features]
 
-	# conv layers
-	p1 = convPoolLayer(x_image, kernel=(5,5), pool_size=3, num_in=1, num_out=16, 
-		func=tf.nn.relu, name='1') # 180 x 180
-	p2 = convPoolLayer(p1, kernel=(5,5), pool_size=3, num_in=16, num_out=16, 
-		func=tf.nn.relu, name='2')  # 60 x 60 
-	p3 = convPoolLayer(p2, kernel=(4,4), pool_size=3, num_in=16, num_out=32, 
-		func=tf.nn.relu, name='3')   # 20 x 20 
-	p4 = convPoolLayer(p3, kernel=(3,3), pool_size=2, num_in=32, num_out=32, 
-		func=tf.nn.relu, name='4')   # 10 x 10 
-	p5 = convPoolLayer(p4, kernel=(3,3), pool_size=2, num_in=32, num_out=64, 
-		func=tf.nn.relu, name='5')   # 5 x 5
+	bottleneck_tensor_size = 2048
+	bottleneck_input = tf.placeholder_with_default(  # A placeholder op that passes through input when its output is not fed.
+		bottleneck_tensor,
+		shape=[BATCH_SIZE, bottleneck_tensor_size],
+		name='BottleneckInputPlaceholder')
 
-	# fully-connected layers
-	fullconn_input_size = 5*5*64
-	p_flat = tf.reshape(p5, [-1, fullconn_input_size])
-
-	f1 = fullyConnectedLayer(p_flat, input_size=fullconn_input_size, num_neurons=1024, 
-		func=tf.nn.relu, name='F1')
+	num_neurons_1 = 1024
+	initial_value = tf.truncated_normal([bottleneck_tensor_size, num_neurons_1], stddev=0.001)
+	layer_weights = tf.Variable(initial_value, name='f1')
+	#variable_summaries(layer_weights)
+	layer_biases = tf.Variable(tf.zeros([class_count]), name='b1')
+	#variable_summaries(layer_biases)
+	
+	f1 = tf.matmul(bottleneck_input, layer_weights) + layer_biases
+	#tf.summary.histogram('pre_activations', logits)	
+	#final_tensor = tf.nn.softmax(logits, name=final_tensor_name)
 
 	drop1 = tf.layers.dropout(inputs=f1, rate=0.4)	
-	f2 = fullyConnectedLayer(drop1, input_size=1024, num_neurons=256, 
+	f2 = fullyConnectedLayer(drop1, input_size=2048, num_neurons=1, 
 		func=tf.nn.relu, name='F2')
-	
-	drop2 = tf.layers.dropout(inputs=f2, rate=0.4)	
-	f3 = fullyConnectedLayer(drop2, input_size=256, num_neurons=1, 
-		func=None, name='F3')	
 
-	output = f3
+	output = f2
 	print('output =', output)
 
 	# 2. Add nodes that represent the optimization algorithm.
