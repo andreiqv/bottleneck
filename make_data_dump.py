@@ -8,12 +8,14 @@ from PIL import Image, ImageDraw
 import _pickle as pickle
 import gzip
 import random
-import tensorflow_hub as hub
 import numpy as np
 np.set_printoptions(precision=4, suppress=True)
+#import tensorflow_hub as hub
 
 
 def load_data(in_dir, img_size=(299,299)):	
+	""" each image has form [height, width, 3]
+	"""
 
 	data = dict()
 	data['filenames'] = []
@@ -46,10 +48,11 @@ def load_data(in_dir, img_size=(299,299)):
 		data['labels'].append(lable)
 		data['filenames'].append(file_name)
 
+
 	return data
 	#return train, valid, test
 
-
+"""
 def covert_data_to_feature_vector(data):
 
 	module = hub.Module("https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1")
@@ -58,7 +61,7 @@ def covert_data_to_feature_vector(data):
 	image_feature_vector = module(data['images'])
 	data['images'] = image_feature_vector
 	return data
-
+"""
 
 def split_data(data, ratio=(6,1,3)):
 
@@ -99,12 +102,12 @@ def split_data(data, ratio=(6,1,3)):
 if __name__ == '__main__':
 
 	in_dir = 'data'
-	data1 = load_data(in_dir, img_size=(540,540))
+	data1 = load_data(in_dir, img_size=(299,299))
 
 	print(len(data1['images']))
 	print(len(data1['labels']))
 
-	data2 = covert_data_to_feature_vector(data1)
+	#data2 = covert_data_to_feature_vector(data1)
 
 	data = split_data(data1, ratio=(6,1,3))
 

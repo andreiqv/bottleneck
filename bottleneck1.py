@@ -128,20 +128,17 @@ with graph.as_default():
 	x = tf.placeholder(tf.float32, [None, height, width]) # Placeholder for input.
 	y = tf.placeholder(tf.float32, [None])   # Placeholder for labels.
 	
-	resized_input_tensor = tf.reshape(x, [-1,540,540,1])
+	resized_input_tensor = tf.reshape(x, [-1,540,540,1]) #[batch_size, height, width, 3].
 
 	#resized_input_tensor = tf.placeholder(tf.float32, [None, height, width, 3])
-
 	#hub.load_module_spec(FLAGS.tfhub_module)
 	#m = hub.Module(module_spec)
 	#bottleneck_tensor = m(resized_input_tensor)
 
 	module = hub.Module("https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1")
-height, width = hub.get_expected_image_size(module)
-images = ...  # A batch of images with shape [batch_size, height, width, 3].
-	image_feature_vector = module(images)  # Features with shape [batch_size, num_features]
-
-	image_feature_vector
+	height, width = hub.get_expected_image_size(module)
+	
+	image_feature_vector = module(resized_input_tensor)  # Features with shape [batch_size, num_features]
 
 	# conv layers
 	p1 = convPoolLayer(x_image, kernel=(5,5), pool_size=3, num_in=1, num_out=16, 
