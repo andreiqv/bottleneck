@@ -123,11 +123,11 @@ graph = tf.Graph() # no necessiry
 with graph.as_default():
 
 	# 1. Construct a graph representing the model.
-	height, width =  299, 299
-	x = tf.placeholder(tf.float32, [None, height, width, 3]) # Placeholder for input.
+	height, width, color =  299, 299, 3
+	x = tf.placeholder(tf.float32, [None, height, width, color ]) # Placeholder for input.
 	y = tf.placeholder(tf.float32, [None])   # Placeholder for labels.
 	
-	resized_input_tensor = tf.reshape(x, [-1, height, width, 3]) #[batch_size, height, width, 3].
+	resized_input_tensor = tf.reshape(x, [-1, height, width, color]) #[batch_size, height, width, 3].
 
 	#resized_input_tensor = tf.placeholder(tf.float32, [None, height, width, 3])
 	#hub.load_module_spec(FLAGS.tfhub_module)
@@ -166,8 +166,8 @@ with graph.as_default():
 	# 2. Add nodes that represent the optimization algorithm.
 
 	loss = tf.reduce_mean(tf.square(output - y))
-	#train_op = tf.train.AdagradOptimizer(0.01).minimize(loss)
-	train_op = tf.train.GradientDescentOptimizer(0.01).minimize(loss)
+	train_op = tf.train.AdagradOptimizer(0.01).minimize(loss)
+	#train_op = tf.train.GradientDescentOptimizer(0.01).minimize(loss)
 
 	# 3. Execute the graph on batches of input data.
 	with tf.Session() as sess:  # Connect to the TF runtime.

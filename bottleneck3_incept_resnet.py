@@ -123,19 +123,21 @@ graph = tf.Graph() # no necessiry
 with graph.as_default():
 
 	# 1. Construct a graph representing the model.
-	height, width =  299, 299
-	x = tf.placeholder(tf.float32, [None, height, width, 3]) # Placeholder for input.
+	height, width, color =  299, 299, 3
+	x = tf.placeholder(tf.float32, [None, height, width, color ]) # Placeholder for input.
 	y = tf.placeholder(tf.float32, [None])   # Placeholder for labels.
 	
-	resized_input_tensor = tf.reshape(x, [-1, height, width, 3]) #[batch_size, height, width, 3].
+	resized_input_tensor = tf.reshape(x, [-1, height, width, color]) #[batch_size, height, width, 3].
 
 	#resized_input_tensor = tf.placeholder(tf.float32, [None, height, width, 3])
 	#hub.load_module_spec(FLAGS.tfhub_module)
 	#m = hub.Module(module_spec)
 	#bottleneck_tensor = m(resized_input_tensor)
 
-	module = hub.Module("https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1")
+	#module = hub.Module("https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1")
+	module = hub.Module("https://tfhub.dev/google/imagenet/inception_resnet_v2/classification/1")	
 	height, width = hub.get_expected_image_size(module)
+	
 	bottleneck_tensor = module(resized_input_tensor)  # Features with shape [batch_size, num_features]
 
 	bottleneck_tensor_size = 2048
@@ -144,20 +146,19 @@ with graph.as_default():
 		shape=[None, bottleneck_tensor_size],
 		name='BottleneckInputPlaceholder')
 
-	#num_neurons_1 = 2048
-	#initial_value = tf.truncated_normal([bottleneck_tensor_size, num_neurons_1], stddev=0.001)
-	#layer_weights = tf.Variable(initial_value, name='f1')
+	num_neurons_1 = 2048
+	initial_value = tf.truncated_normal([bottleneck_tensor_size, num_neurons_1], stddev=0.001)
+	layer_weights = tf.Variable(initial_value, name='f1')
 	#variable_summaries(layer_weights)
-	#layer_biases = tf.Variable(tf.zeros([num_neurons_1]), name='b1')
+	layer_biases = tf.Variable(tf.zeros([num_neurons_1]), name='b1')
 	#variable_summaries(layer_biases)
 	
-	#f1 = tf.matmul(bottleneck_input, layer_weights) + layer_biases
+	f1 = tf.matmul(bottleneck_input, layer_weights) + layer_biases
 	#tf.summary.histogram('pre_activations', logits)	
 	#final_tensor = tf.nn.softmax(logits, name=final_tensor_name)
 
-	#drop1 = tf.layers.dropout(inputs=f1, rate=0.4)	
-	
-	f2 = fullyConnectedLayer(bottleneck_input, input_size=2048, num_neurons=1, 
+	drop1 = tf.layers.dropout(inputs=f1, rate=0.4)	
+	f2 = fullyConnectedLayer(drop1, input_size=2048, num_neurons=1, 
 		func=None, name='F2')
 
 	output = f2
@@ -166,8 +167,8 @@ with graph.as_default():
 	# 2. Add nodes that represent the optimization algorithm.
 
 	loss = tf.reduce_mean(tf.square(output - y))
-	#train_op = tf.train.AdagradOptimizer(0.01).minimize(loss)
-	train_op = tf.train.GradientDescentOptimizer(0.01).minimize(loss)
+	train_op = tf.train.AdagradOptimizer(0.01).minimize(loss)
+	#train_op = tf.train.GradientDescentOptimizer(0.01).minimize(loss)
 
 	# 3. Execute the graph on batches of input data.
 	with tf.Session() as sess:  # Connect to the TF runtime.
