@@ -229,7 +229,7 @@ with graph.as_default():
 			a2 = (iteration + 1)*BATCH_SIZE % train['size']
 			x_data = train['images'][a1:a2]
 			y_data = train['labels'][a1:a2]
-			print('a1={0}, a2={1}'.format(a1, a2))
+			#print('a1={0}, a2={1}'.format(a1, a2))
 			if len(x_data) <= 0: continue
 			sess.run(train_op, {x: x_data, y: y_data})  # Perform one training iteration.		
 			#print(a1, a2, y_data)			
