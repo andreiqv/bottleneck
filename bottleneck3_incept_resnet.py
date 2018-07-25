@@ -140,7 +140,7 @@ with graph.as_default():
 	
 	bottleneck_tensor = module(resized_input_tensor)  # Features with shape [batch_size, num_features]
 
-	bottleneck_tensor_size = 2048
+	bottleneck_tensor_size = 1001
 	bottleneck_input = tf.placeholder_with_default(  # A placeholder op that passes through input when its output is not fed.
 		bottleneck_tensor,
 		shape=[None, bottleneck_tensor_size],
