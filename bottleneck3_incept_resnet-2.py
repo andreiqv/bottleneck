@@ -166,7 +166,12 @@ with graph.as_default():
 
 	# 2. Add nodes that represent the optimization algorithm.
 
-	loss = tf.reduce_mean(tf.square(output - y))
+	#loss = tf.reduce_mean(tf.square(output - y))
+	
+	#loss = tf.reduce_sum(tf.pow(output - y, 2))/(n_instances)
+	#loss = tf.reduce_mean(tf.squared_difference(output, y))
+	loss = tf.nn.l2_loss(output - y)
+
 	#optimizer = tf.train.AdagradOptimizer(0.01)
 	#optimizer= tf.train.AdagradOptimizer(0.01)
 	optimizer= tf.train.AdamOptimizer(0.003)
