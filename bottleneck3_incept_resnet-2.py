@@ -159,7 +159,7 @@ with graph.as_default():
 
 	drop1 = tf.layers.dropout(inputs=f1, rate=0.4)	
 	f2 = fullyConnectedLayer(drop1, input_size=2048, num_neurons=1, 
-		func=tf.sigmoid, name='F2')
+		func=None, name='F2')
 
 	output = f2
 	print('output =', output)
