@@ -37,9 +37,11 @@ def load_data(in_dir, img_size=(299,299)):
 
 		name = ''.join(file_name.split('.')[:-1])
 		angle = name.split('_')[-1]
-		lable = float(angle) / 360.0
+		lable = np.array([float(angle) / 360.0], dtype=np.float64)
 
-		if type(lable)!=float:
+		if type(lable[0]) != np.float64:
+			print(lable[0])
+			print(type(lable[0]))
 			print('type(lable)!=float')
 			raise Exception('lable type is not float')
 

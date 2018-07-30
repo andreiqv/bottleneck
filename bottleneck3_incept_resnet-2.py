@@ -125,7 +125,7 @@ with graph.as_default():
 	# 1. Construct a graph representing the model.
 	height, width, color =  299, 299, 3
 	x = tf.placeholder(tf.float32, [None, height, width, color ]) # Placeholder for input.
-	y = tf.placeholder(tf.float32, [None])   # Placeholder for labels.
+	y = tf.placeholder(tf.float32, [None, 1])   # Placeholder for labels.
 	
 	resized_input_tensor = tf.reshape(x, [-1, height, width, color]) #[batch_size, height, width, 3].
 
@@ -186,13 +186,9 @@ with graph.as_default():
 
 			if iteration % 200 == 0:
 
-				#output_values = output.eval(feed_dict = {x:train['images'][:3]})
-				#print('train: {0:.2f} - {1:.2f}'.format(output_values[0][0]*360, train['labels'][0]*360))
-				#print('train: {0:.2f} - {1:.2f}'.format(output_values[1][0]*360, train['labels'][1]*360))
 				output_values = output.eval(feed_dict = {x:valid['images'][:3]})
-				print('valid: {0:.2f} - {1:.2f}'.format(output_values[0][0]*360, valid['labels'][0]*360))
-				print('valid: {0:.2f} - {1:.2f}'.format(output_values[1][0]*360, valid['labels'][1]*360))
-				#print('valid: {0:.2f} - {1:.2f}'.format(output_values[2][0]*360, valid['labels'][2]*360))
+				print('valid: {0:.2f} - {1:.2f}'.format(output_values[0][0]*360, valid['labels'][0][0]*360))
+				print('valid: {0:.2f} - {1:.2f}'.format(output_values[1][0]*360, valid['labels'][1][0]*360))
 
 				output_angles_valid = []
 				for i in range(num_valid_batches):
@@ -241,10 +237,12 @@ with graph.as_default():
 
 		# Save the comp. graph
 
+		"""
 		x_data, y_data =  valid['images'], valid['labels'] #mnist.train.next_batch(BATCH_SIZE)		
 		writer = tf.summary.FileWriter("output", sess.graph)
 		print(sess.run(train_op, {x: x_data, y: y_data}))
 		writer.close()  
+		"""
 
 		# Test of model
 		"""
@@ -256,8 +254,11 @@ with graph.as_default():
 		print('Test of model')
 		print('Test_accuracy={0:0.4f}'.format(test_accuracy))
 		"""
+
+		"""
 		test_accuracy = loss.eval(feed_dict={x:test['images'][0:BATCH_SIZE]})
 		print('Test_accuracy={0:0.4f}'.format(test_accuracy))				
+		"""
 
 		# Rotate images:
 		in_dir = 'data'
