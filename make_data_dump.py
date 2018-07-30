@@ -45,7 +45,7 @@ def load_data(in_dir, img_size=(299,299)):
 			print('type(lable)!=float')
 			raise Exception('lable type is not float')
 
-		print('{0}: {1:.3f}, {2}' .format(angle, lable, file_name))
+		print('{0}: {1:.3f}, {2}' .format(angle, lable[0], file_name))
 		data['images'].append(arr)
 		data['labels'].append(lable)
 		data['filenames'].append(file_name)
